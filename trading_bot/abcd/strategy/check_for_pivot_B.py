@@ -1,8 +1,7 @@
-
-from abcd_script.trading_bot.abcd.models.A_PivotSingle import A_PivotSingle
+from abcd_script.trading_bot.abcd.strategy.Pattern_Models import *
 from abcd_script.trading_bot.abcd.pivot_screener.findPivot import findPivot
 
-def create_B(b_pivot, date, pivot_length, high, open, close, low, full_length,):
+def create_B(b_pivot, date, pivot_length, high, open, close, low, full_length,candle_ids, candle_dates):
 
     pivotID = len(b_pivot)
     pivotLetter = 'B'
@@ -21,7 +20,7 @@ def create_B(b_pivot, date, pivot_length, high, open, close, low, full_length,):
     retracementPrice = None,
    
 
-    pivot_B = A_PivotSingle(
+    pivot_B = Pattern_A(
         pivotID,
         pivotLetter,
         pivotColor,
@@ -37,7 +36,9 @@ def create_B(b_pivot, date, pivot_length, high, open, close, low, full_length,):
         daysSincePreviousPivot,
         retracementPct,
         retracementPrice,
-        full_length
+        full_length,
+        candle_ids,
+        candle_dates
         
     )
     
@@ -79,61 +80,87 @@ def check_A_position_to_B_position(market, pivot_A, pivot_B):
 
     return b_position
 
-def check_if_A_is_the_lowest(bars_between_A_and_B, candle_high, candle_low, pivot_A):
+def check_if_A_is_the_lowest(bars_between_A_and_B, candle_high, candle_low, pivot_A_low):
 
-    is_pivot_A_the_lowest = True
+    try:
+        is_pivot_A_the_lowest = True
 
-    for each in range(bars_between_A_and_B):
+        for each in range(bars_between_A_and_B):
 
-            if candle_high[-each] < pivot_A.pivotInfo['low']:
-                is_pivot_A_the_lowest = False
+                if candle_high[-each] < pivot_A_low:
             
-            if candle_low[-each] < pivot_A.pivotInfo['low']:
-                is_pivot_A_the_lowest = False
+                    is_pivot_A_the_lowest = False
+                
+                if candle_low[-each] < pivot_A_low:
+                    is_pivot_A_the_lowest = False
+            
+        return is_pivot_A_the_lowest
+
+    except Exception as e:
+        print(f'check_if_A_is_the_lowest {e}')
+                            
+def check_if_A_is_the_highest(
+    bars_between_A_and_B, 
+    candle_high, 
+    candle_low, 
+    pivot_A_high,
+
+    ):
+
+    try:    
+        isPivotA_Highest = True
         
-    return is_pivot_A_the_lowest
-
-def check_if_A_is_the_highest(bars_between_A_and_B, candle_high, candle_low, pivot_A):
-
-    isPivotA_Highest = True
-
-    for each in range(bars_between_A_and_B):
-
-            if candle_high[-each] > pivot_A.pivotInfo['high']:
+        for each in range(bars_between_A_and_B):
+          
+            # print(bars_between_A_and_B ,date(ago=-each),'candle high:',candle_high[-each], candle_low[-each], pivot_A_high)
+        
+            if candle_high[-each] > pivot_A_high:
+                
                 isPivotA_Highest = False  
+                
 
-            if candle_low[-each] > pivot_A.pivotInfo['high']:
+            if candle_low[-each] > pivot_A_high:
+             
                 isPivotA_Highest = False        
-    
-    return isPivotA_Highest
-
-def check_if_B_is_the_lowest(bars_between_A_and_B, candle_open, candle_close, pivot_B):
-            
-    isPivotB_Lowest = True
-
-    for each in range(bars_between_A_and_B):
-
-        if candle_open[-each] < pivot_B.pivotInfo['low']:
-            isPivotB_Lowest =  False
         
-        if candle_close[-each] < pivot_B.pivotInfo['low']: 
-            isPivotB_Lowest = False
+        return isPivotA_Highest
+    except Exception as e:
+        print(f'check_if_A_is_the_highest {e}')
 
-    return isPivotB_Lowest
+def check_if_B_is_the_lowest(bars_between_A_and_B, candle_open, candle_close, pattern_B_low):
 
-def check_if_B_is_the_highest(bars_between_A_and_B, candle_high, candle_low, pivot_B):
+    try:     
+        isPivotB_Lowest = True
+
+        for each in range(bars_between_A_and_B):
+
+            if candle_open[-each] < pattern_B_low:
+                isPivotB_Lowest =  False
             
-    isPivotB_Highest = True
-    for each in range(bars_between_A_and_B):
-        if candle_high[-each] > pivot_B.pivotInfo['high']:
-            isPivotB_Highest = False
+            if candle_close[-each] < pattern_B_low: 
+                isPivotB_Lowest = False
+        return isPivotB_Lowest
 
-        if candle_low[-each] >  pivot_B.pivotInfo['high']: 
-            isPivotB_Highest = False
+    except Exception as e:
+        print(f'check_if_B_is_the_lowest {e}')
 
-    return isPivotB_Highest
+def check_if_B_is_the_highest(bars_between_A_and_B, candle_high, candle_low, pattern_B_high):
 
-def find_B(market, close, open, pivot_length):
+    try:
+
+        isPivotB_Highest = True
+        for each in range(bars_between_A_and_B):
+            if candle_high[-each] > pattern_B_high:
+                isPivotB_Highest = False
+
+            if candle_low[-each] > pattern_B_high: 
+                isPivotB_Highest = False
+    
+        return isPivotB_Highest
+    except Exception as e:
+        print(f'check_if_B_is_the_highest {e}')
+
+def find_B(pivot, pivotOjbect, date, market, close, open, pivot_length):
 
     pivotType = None
 
@@ -141,11 +168,11 @@ def find_B(market, close, open, pivot_length):
 
         case 'Bull':
             
-            pivotType = findPivot(close, open, pivot_length, 'Bear')
+            pivotType = findPivot(pivot, pivotOjbect, date, close, open, pivot_length, 'Bear')
 
         case 'Bear':
 
-            pivotType = findPivot(close, open, pivot_length, 'Bull')
+            pivotType = findPivot(date, close, open, pivot_length, 'Bull')
 
     return pivotType
 
@@ -173,15 +200,19 @@ def check_if_A_to_B_is_correct_shape(market, is_A_the_highest, is_B_the_lowest, 
 
                 return False
 
-def check_ab_is_start_of_abcd(market, pivot_A, pivot_B):
+def check_ab_is_start_of_abcd(market, pivot_A_high, pivot_B_low):
 
-    match market:
 
-        case 'Bull':
+    try:
+
+        match market:
+
+            case 'Bull':
+                
+                return pivot_A_high > pivot_B_low
             
-            return pivot_A.pivotInfo['high'] > pivot_B.pivotInfo['low']
-        
-        case 'Bear':
+            case 'Bear':
 
-            return pivot_A.pivotInfo['high'] < pivot_B.pivotInfo['low']
-        
+                return pivot_A_high < pivot_B_low
+    except Exception as e:
+        print(f'check_ab_is_start_of_abcd {e}')

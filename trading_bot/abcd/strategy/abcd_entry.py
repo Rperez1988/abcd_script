@@ -24,7 +24,10 @@ def get_risk_and_reward(market, abcd, entry_price, rrr):
 
         case 'Bull':
 
-            pivotC_High = get_high_of_candle(abcd.pivot_C.pivotInfo['open'], abcd.pivot_C.pivotInfo['close'])
+            pivotC_High = get_high_of_candle(
+                abcd.pattern_C_open, 
+                abcd.pattern_C_close
+            )
 
             reward = pivotC_High - entry_price
 

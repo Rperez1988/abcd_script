@@ -63,6 +63,9 @@ class ABCD_Open():
             'currentDate': str(currentDate),
             'pivot_number' : None,
             'lowest_price_dropped': str(entryPrice),
+
+
+
             'rsi': '%.2f'%(rsi), 
             'volume': volume,
             'abcd_volumes': str(prev_bars_volume),
@@ -109,12 +112,12 @@ class ABCD_Open():
         self.settings = settings
               
         self.pnl = {
-            'risk': '%.2f'%(risk),
-            'reward': '%.2f'%(reward),
-            'stopLoss': '%.2f'%(stopLoss),
-            'takeProfit': '%.2f'%(takeProfit),
-            'pnl': self.getPNL(self.tradeInfo['closingTradeType'], self.tradeInfo['currentPrice'], pivot_C.pivotInfo['open']),
-            'returnPercentage':'',
+            # 'risk': '%.2f'%(risk),
+            # 'reward': '%.2f'%(reward),
+            # 'stopLoss': '%.2f'%(stopLoss),
+            # 'takeProfit': '%.2f'%(takeProfit),
+            # 'pnl': self.getPNL(self.tradeInfo['closingTradeType'], self.tradeInfo['currentPrice'], pivot_C.pivotInfo['open']),
+            # 'returnPercentage':'',
             'riskRewardRatio': 5,
         }
         
@@ -124,18 +127,18 @@ class ABCD_Open():
         }
         
         self.enterExitInfo = {
-            'enterPrice': str(entryPrice),
-            'enterDate': str(enterDate),
-            'exitPrice': '%.2f'%(pivot_D.pivotInfo['close']),
-            'exitDate': str(currentDate),
+            # 'enterPrice': str(entryPrice),
+            # 'enterDate': str(enterDate),
+            # 'exitPrice': '%.2f'%(pivot_D.pivotInfo['close']),
+            # 'exitDate': str(currentDate),
         }
         
         self.duration = {
     
             'bars':{
-				'A_to_B': barsBetweenAandB,
-				'B_to_C': barsBetweenBandC,
-				'C_to_D': barsBetweenCandD,
+				# 'A_to_B': barsBetweenAandB,
+				# 'B_to_C': barsBetweenBandC,
+				# 'C_to_D': barsBetweenCandD,
                 'ab_pct': '%.2f'%((barsBetweenAandB/barsBetweenAandB) * 100),
                 'bc_pct': '%.2f'%((barsBetweenBandC/barsBetweenAandB) * 100),
                 'cd_pct': '%.2f'%((barsBetweenCandD/barsBetweenAandB) * 100),
@@ -160,16 +163,16 @@ class ABCD_Open():
 
         }
         
-        self.length = {
-            'a_length': 0,
-            'b_length': 0,
-            'a_b_length': ab_full_length,
-            'a_b_c_length': 0,
-            'b_c_length': 0,
-            'abcd_length': abcd_full_length,
+        # self.length = {
+        #     'a_length': 0,
+        #     'b_length': 0,
+        #     'a_b_length': ab_full_length,
+        #     'a_b_c_length': 0,
+        #     'b_c_length': 0,
+        #     'abcd_length': abcd_full_length,
 
 
-        }
+        # }
     
     def getOHLCChartData(self, date ,open, high, low, close):
 
